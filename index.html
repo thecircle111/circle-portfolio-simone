@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>The Circle — Simone Esposito</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap');
+
+  :root{
+    --bg:#0A0A0A;
+    --bg-raised:#141414;
+    --orange:#D85A30;
+    --orange-light:#F0997B;
+    --text-primary:#F1EFE8;
+    --text-secondary:#B4B2A9;
+    --text-tertiary:#5F5E5A;
+    --border:rgba(241,239,232,0.08);
+    --border-strong:rgba(241,239,232,0.16);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--bg);
+    color:var(--text-primary);
+    font-family:'Inter',sans-serif;
+    font-weight:300;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px;}
+
+  /* SCROLL BG LOGO */
+  .bg-logo{
+    position:fixed;
+    top:0;left:0;
+    width:clamp(160px,22vw,280px);
+    opacity:0.38;
+    pointer-events:none;
+    z-index:0;
+    filter:sepia(1) saturate(8) hue-rotate(5deg) brightness(0.8);
+    will-change:transform,opacity;
+    mix-blend-mode:screen;
+  }
+  body > *:not(.bg-logo){position:relative;z-index:1;}
+
+  /* NAV */
+  nav{
+    position:fixed;top:0;left:0;right:0;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 24px;
+    z-index:100;
+    background:linear-gradient(to bottom,rgba(10,10,10,0.95),transparent);
+  }
+  .nav-logo img{height:32px;width:auto;}
+  .nav-cta{
+    font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+    border:1px solid var(--border-strong);padding:10px 18px;
+    color:var(--text-primary);text-decoration:none;
+    background:none;font-family:'Inter',sans-serif;cursor:pointer;
+    transition:border-color .2s;
+  }
+  .nav-cta:hover{border-color:var(--orange);}
+
+  /* POPUP */
+  .popup-overlay{
+    display:none;position:fixed;inset:0;
+    background:rgba(0,0,0,0.8);
+    z-index:200;align-items:center;justify-content:center;
+  }
+  .popup-overlay.active{display:flex;}
+  .popup{
+    background:#141414;border:1px solid var(--border-strong);
+    padding:48px 40px;max-width:420px;width:90%;position:relative;
+  }
+  .popup-close{
+    position:absolute;top:18px;right:18px;
+    background:none;border:none;color:var(--text-tertiary);
+    font-size:22px;cursor:pointer;transition:color .2s;
+  }
+  .popup-close:hover{color:var(--text-primary);}
+  .popup-eyebrow{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--orange-light);margin-bottom:16px;}
+  .popup-name{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;margin-bottom:4px;}
+  .popup-title{font-size:12px;color:var(--text-tertiary);letter-spacing:1px;text-transform:uppercase;margin-bottom:32px;}
+  .popup-divider{height:1px;background:var(--border);margin-bottom:28px;}
+  .popup-link{
+    display:flex;align-items:center;gap:14px;text-decoration:none;
+    padding:14px 0;border-bottom:1px solid var(--border);transition:opacity .2s;
+  }
+  .popup-link:last-child{border-bottom:none;}
+  .popup-link:hover{opacity:0.7;}
+  .popup-link-icon{
+    width:34px;height:34px;border:1px solid var(--border-strong);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .popup-link-icon svg{width:15px;height:15px;stroke:var(--orange-light);fill:none;stroke-width:1.5;}
+  .popup-link-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:2px;}
+  .popup-link-value{font-size:14px;color:var(--text-primary);}
+
+  /* HERO */
+  .hero{
+    min-height:100vh;
+    display:flex;flex-direction:column;
+    justify-content:center;align-items:center;
+    text-align:center;
+    padding:120px 24px 80px;
+    position:relative;overflow:hidden;
+  }
+  .hero-arc{
+    position:absolute;width:900px;height:900px;
+    border-radius:50%;border:1px solid rgba(216,90,48,0.12);
+    top:-300px;right:-350px;pointer-events:none;
+  }
+  .hero-arc.two{
+    width:600px;height:600px;
+    border:1px solid rgba(216,90,48,0.2);
+    top:-150px;right:-200px;
+  }
+  .hero-logo{
+    width:clamp(140px,18vw,240px);
+    margin-bottom:48px;display:block;
+  }
+  .eyebrow{
+    font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--orange-light);margin-bottom:20px;
+    display:flex;align-items:center;justify-content:center;gap:12px;
+  }
+  .eyebrow::before,.eyebrow::after{content:'';width:24px;height:1px;background:var(--orange);}
+  h1.display{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:500;
+    font-size:clamp(28px,4.5vw,62px);
+    line-height:1.06;
+    max-width:820px;
+    margin-bottom:28px;
+  }
+  h1.display em{font-style:italic;color:var(--orange-light);}
+  .hero-sub{
+    font-size:clamp(15px,2vw,18px);font-weight:300;
+    color:var(--text-secondary);
+    max-width:540px;margin-bottom:56px;
+  }
+  .hero-meta{
+    display:flex;gap:40px;flex-wrap:wrap;justify-content:center;
+    padding-top:36px;border-top:1px solid var(--border);
+    max-width:680px;width:100%;
+  }
+  .hero-meta div{font-size:12px;color:var(--text-tertiary);letter-spacing:0.5px;text-align:center;}
+  .hero-meta strong{display:block;font-size:13px;font-weight:400;color:var(--text-primary);margin-bottom:4px;}
+
+  /* SECTIONS */
+  section{padding:100px 0;position:relative;}
+
+  .section-head{margin-bottom:64px;}
+  .section-num{font-size:16px;letter-spacing:3px;color:var(--orange-light);text-transform:uppercase;margin-bottom:16px;display:block;font-weight:400;}
+  h2.section-title{
+    font-family:'Cormorant Garamond',serif;font-weight:500;
+    font-size:clamp(28px,4vw,44px);line-height:1.15;margin-bottom:16px;
+  }
+  .section-desc{font-size:16px;color:var(--text-secondary);max-width:520px;}
+
+  /* CASE STUDIES */
+  .case{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:56px;align-items:center;margin-bottom:120px;
+  }
+  .case:last-child{margin-bottom:0;}
+  .case.reverse .case-media{order:2;}
+  .case.reverse .case-text{order:1;}
+  .case-media{
+    aspect-ratio:4/5;background:var(--bg-raised);
+    border:1px solid var(--border);overflow:hidden;
+  }
+  .case-media img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;}
+  .case-media:hover img{transform:scale(1.04);}
+  .case-tag{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--orange-light);margin-bottom:14px;}
+  .case-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:500;margin-bottom:6px;line-height:1.2;}
+  .case-sub{font-size:12px;color:var(--text-tertiary);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;}
+  .case-body{font-size:14px;color:var(--text-secondary);margin-bottom:24px;font-weight:300;line-height:1.75;}
+  .case-line{
+    font-family:'Cormorant Garamond',serif;font-style:italic;
+    font-size:17px;color:var(--text-primary);
+    border-left:1px solid var(--orange);padding-left:18px;
+  }
+
+  /* NETWORK */
+  .network-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);
+    gap:1px;background:var(--border);border:1px solid var(--border);
+    margin-top:64px;
+  }
+  .network-card{background:var(--bg);padding:40px 36px;}
+  .network-name{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--orange-light);margin-bottom:8px;}
+  .network-person{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;margin-bottom:16px;}
+  .network-desc{font-size:13px;color:var(--text-secondary);font-weight:300;line-height:1.75;}
+
+  /* CONNECT */
+  .connect-section{text-align:center;padding:120px 0;}
+  .connect-section h2{
+    font-family:'Cormorant Garamond',serif;font-weight:500;
+    font-size:clamp(30px,5vw,52px);margin-bottom:20px;line-height:1.1;
+  }
+  .connect-section p{
+    color:var(--text-secondary);font-size:15px;
+    margin-bottom:44px;max-width:400px;margin-left:auto;margin-right:auto;
+  }
+  .connect-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--orange);color:#1A0D06;
+    padding:14px 32px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
+    text-decoration:none;font-weight:500;border:1px solid var(--orange);
+    transition:opacity .2s;cursor:pointer;font-family:'Inter',sans-serif;
+  }
+  .btn-primary:hover{opacity:0.85;}
+  .btn-ghost{
+    color:var(--text-primary);padding:14px 32px;font-size:12px;
+    letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;
+    border:1px solid var(--border-strong);transition:border-color .2s;display:inline-block;
+  }
+  .btn-ghost:hover{border-color:var(--orange);}
+
+  footer{
+    border-top:1px solid var(--border);padding:36px 0;
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:11px;color:var(--text-tertiary);letter-spacing:1px;
+    flex-wrap:wrap;gap:16px;
+  }
+  footer a{color:var(--text-tertiary);text-decoration:none;margin-left:20px;}
+  footer a:hover{color:var(--orange-light);}
+
+  /* MOBILE */
+  @media(max-width:720px){
+    .case,.case.reverse{grid-template-columns:1fr;gap:28px;}
+    .case.reverse .case-media{order:1;}
+    .case.reverse .case-text{order:2;}
+    .network-grid{grid-template-columns:1fr;}
+    .hero-meta{gap:24px;}
+    footer{flex-direction:column;text-align:center;}
+    footer a{margin:0 10px;}
+    .hero-arc,.hero-arc.two{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<img class="bg-logo" src="logo.png" alt="">
+
+<!-- POPUP -->
+<div class="popup-overlay" id="contactPopup">
+  <div class="popup">
+    <button class="popup-close" onclick="closePopup()">&#215;</button>
+    <div class="popup-eyebrow">The Circle</div>
+    <div class="popup-name">Simone Esposito</div>
+    <div class="popup-title">Head of Luxury &amp; Innovation</div>
+    <div class="popup-divider"></div>
+    <a class="popup-link" href="mailto:simone@lxrysolutions.com">
+      <div class="popup-link-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+      </div>
+      <div>
+        <div class="popup-link-label">Email</div>
+        <div class="popup-link-value">simone@lxrysolutions.com</div>
+      </div>
+    </a>
+    <a class="popup-link" href="https://www.linkedin.com/in/siesposito/" target="_blank">
+      <div class="popup-link-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><path d="M7 10v7M7 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg>
+      </div>
+      <div>
+        <div class="popup-link-label">LinkedIn</div>
+        <div class="popup-link-value">Simone Esposito</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-logo"><img src="logo.png" alt="The Circle"></div>
+  <button class="nav-cta" onclick="openPopup()">Get in touch</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-arc"></div>
+  <div class="hero-arc two"></div>
+  <img class="hero-logo" src="logo.png" alt="The Circle" id="heroLogo">
+  <span class="eyebrow">Cultural infrastructure</span>
+  <h1 class="display">Where senior relationships form and <em>culture is made</em></h1>
+  <p class="hero-sub">We build the architecture around people, brands and place - for high trust capital environments across finance, culture and luxury.</p>
+  <div class="hero-meta">
+    <div><strong>Global</strong>London · Singapore · Egypt · Saudi Arabia · UAE · Monaco · Hong Kong</div>
+    <div><strong>Sovereign level</strong>Royal patronage, G20, institutional forums</div>
+    <div><strong>Principal access</strong>Rooms that cannot be bought. Held by relationship.</div>
+  </div>
+</section>
+
+<!-- CASE STUDIES -->
+<section class="wrap">
+  <div class="section-head">
+    <span class="section-num">Case studies</span>
+    <p class="section-desc">Experiences around the world at every scale.</p>
+  </div>
+
+  <!-- LONDON -->
+  <div class="case">
+    <div class="case-media"><img src="london-vault.jpg" alt="The Citadel Chapter One London"></div>
+    <div class="case-text">
+      <div class="case-tag">London - Capital &amp; Culture</div>
+      <div class="case-title">A Bank Vault in Central London</div>
+      <div class="case-sub">Twenty four principals, each chosen personally</div>
+      <p class="case-body">A founding dinner composed as a single cultural world - sculpture from Bowman's Gallery, the London Philharmonic Orchestra, and Clase Azul and Lay &amp; Wheeler on the table. The room held the standard of the most consequential environments we operate in: closed, authored, and built around one thing. Real conversation, between principals who do not often share a table.</p>
+      <p class="case-line">Culture is not the decoration. It is the architecture.</p>
+    </div>
+  </div>
+
+  <!-- SINGAPORE -->
+  <div class="case reverse">
+    <div class="case-media"><img src="singapore-mandala.png" alt="Singapore Grand Prix Mandala Club"></div>
+    <div class="case-text">
+      <div class="case-tag">Singapore - Finance · Motorsport · Culture</div>
+      <div class="case-title">Singapore Grand Prix - The Mandala Club</div>
+      <div class="case-sub">The most concentrated week of capital in Asia</div>
+      <p class="case-body">A full private buyout of one of Singapore's most exclusive private members' houses, inside the week when Formula One and Token2049 converge. More than one hundred principals by invitation only - founders, allocators, family offices and institutional capital from four continents. The room was designed for one thing. Real conversation, at the level that produces decisions. Fifty capital introductions made between guests. Several partnerships moved into active negotiation. The relationships remain live.</p>
+      <p class="case-line">A room made by timing, trust and proximity. Not promotion.</p>
+    </div>
+  </div>
+
+  <!-- EGYPT -->
+  <div class="case">
+    <div class="case-media"><img src="egypt-dj.png" alt="Egypt North Coast cultural programme"></div>
+    <div class="case-text">
+      <div class="case-tag">Egypt - Culture at scale</div>
+      <div class="case-title">The Egyptian North Coast</div>
+      <div class="case-sub">A thousand person cultural programme</div>
+      <p class="case-body">For one of the region's highest concentrations of UHNW. A beachfront opening carried by iconic Egyptian figures alongside international music and three simultaneous global brand partners, each activated as a principal within a single coherent programme - none visible as a sponsor. Egyptian and Gulf UHNW communities. Regional cultural leaders. Next generation capital. The brief demanded cultural specificity that went far beyond production. We didn't activate around Egypt's cultural moment. We created it.</p>
+      <p class="case-line">Scale is not the enemy of authorship.</p>
+    </div>
+  </div>
+
+  <!-- SMK TENNIS -->
+  <div class="case reverse">
+    <div class="case-media"><img src="smk-tennis.png" alt="SMK Private Tennis Tournament Abu Dhabi"></div>
+    <div class="case-text">
+      <div class="case-tag">Abu Dhabi - Sovereign Access</div>
+      <div class="case-title">The SMK Private Tennis Tournament</div>
+      <div class="case-sub">Now in its fourteenth edition</div>
+      <p class="case-body">An exclusively female tournament and one of the most discreet fixtures in the Abu Dhabi calendar. Held under the patronage of HH Sheikha Fatima bint Mubarak, at the private marina of HH Sheikh Saeed bin Hamdan Al Nahyan. Presented by FURA Gems. Royal patronage, private royal property and the institutional network of the capital built around a single week of competition. Royal-adjacent, UHNW and institutional guests within Abu Dhabi's most senior circles, held to the standard of protocol and discretion that access of this order demands.</p>
+      <p class="case-line">Access of this kind is never booked. It is held.</p>
+    </div>
+  </div>
+
+  <!-- SAUDI -->
+  <div class="case">
+    <div class="case-media"><img src="saudi-g20.png" alt="Saudi G20 Presidency"></div>
+    <div class="case-text">
+      <div class="case-tag">Saudi Arabia - Sovereign Narrative</div>
+      <div class="case-title">The Saudi G20 Presidency</div>
+      <div class="case-sub">The first time the Kingdom held the Presidency</div>
+      <p class="case-body">We authored the international narrative of the Presidency and ran its global media programme, in English and Arabic, holding a single coherent message across the government bodies and senior stakeholders directing the year. Heads of state and their delegations. The international press. The ministerial and royal-adjacent leadership of the Presidency itself. One voice, across a year of the highest profile diplomacy in the Kingdom's history, under continuous international attention.</p>
+      <p class="case-line">Narrative held at sovereign level does not drift. It is built, and it holds.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NETWORK -->
+<section class="wrap" style="padding-top:160px;">
+  <div class="section-head">
+    <span class="section-num">The Network</span>
+    <h2 class="section-title">What follows is built over years.<br>It cannot be assembled for a brief.</h2>
+    <p class="section-desc">Relationships are held, not disclosed. Access is by introduction.</p>
+  </div>
+  <div class="network-grid">
+    <div class="network-card">
+      <div class="network-name">Creative Capital Ventures</div>
+      <div class="network-person">The institutional investor</div>
+      <p class="network-desc">Equity partner and institutional backbone of The Circle. Board-level relationships across music, culture and capital. UHNW and family office networks across Europe and Asia. Principals include Harvey Goldsmith CBE - architect of Live Aid and five decades of the world's most significant cultural moments - and Tom Rogers, founder of CNBC.</p>
+    </div>
+    <div class="network-card">
+      <div class="network-name">The Intersection Advisory</div>
+      <div class="network-person">John Scott</div>
+      <p class="network-desc">Thirty years across the highest levels of Gulf institutional life and global communications. VP Consumer Marketing, Dubai Tourism. Head of Marketing and Communications, Saudi G20 Presidency. Strategic Communications Advisor, NEOM and The Line. Senior Advisor, Saudi Ministry of Economy during Vision 2030. Primary gateway to PIF and the broader Saudi institutional landscape.</p>
+    </div>
+    <div class="network-card">
+      <div class="network-name">LXRYSolutions</div>
+      <div class="network-person">Simone Esposito</div>
+      <p class="network-desc">Three decades across European luxury, global entertainment and sovereign capital. Senior partnerships spanning Loro Piana, Harrods, Lamborghini and Emirates. Active institutional relationships across ADIO, SELA, DMCC, FURA Gems and AURA Blockchain Consortium.</p>
+    </div>
+    <div class="network-card">
+      <div class="network-name">Institutional venue access</div>
+      <div class="network-person">Board-level relationships</div>
+      <p class="network-desc">Cultural institutions that do not take standard commercial bookings across our operating markets. Musée Océanographique - Monaco. ArtScience Museum - Singapore. Etihad Museum - Dubai. House of KOKO - London. Access held by relationship, not procurement.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONNECT -->
+<section class="connect-section wrap">
+  <span class="eyebrow">Connect</span>
+  <h2>Culture is created<br>in rooms like this.</h2>
+  <p>Write to us directly, or follow the rooms we build.</p>
+  <div class="connect-actions">
+    <button class="btn-primary" onclick="openPopup()">Get in touch</button>
+    <a class="btn-ghost" href="https://www.linkedin.com/in/siesposito/" target="_blank">LinkedIn</a>
+    <a class="btn-ghost" href="https://www.instagram.com/the.circleglobal/?hl=en" target="_blank">Instagram</a>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div>The Circle - Josh Dean, Founder / CEO</div>
+  <div>
+    <a href="mailto:simone@lxrysolutions.com">Email</a>
+    <a href="https://www.linkedin.com/in/siesposito/" target="_blank">LinkedIn</a>
+    <a href="https://www.instagram.com/the.circleglobal/?hl=en" target="_blank">Instagram</a>
+  </div>
+</footer>
+
+<script>
+  function openPopup(){document.getElementById('contactPopup').classList.add('active');}
+  function closePopup(){document.getElementById('contactPopup').classList.remove('active');}
+  document.getElementById('contactPopup').addEventListener('click',function(e){if(e.target===this)closePopup();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closePopup();});
+
+  // Scroll-driven logo growth anchored to hero logo
+  const bgLogo = document.querySelector('.bg-logo');
+  const heroLogo = document.getElementById('heroLogo');
+
+  // Cache hero logo centre in viewport at page load
+  let heroCX = window.innerWidth / 2;
+  let heroCY = window.innerHeight * 0.38;
+
+  function cacheHero(){
+    const rect = heroLogo.getBoundingClientRect();
+    heroCX = rect.left + rect.width / 2;
+    heroCY = rect.top + rect.height / 2;
+  }
+
+  function updateLogo(){
+    const scrollTop = window.scrollY;
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    const progress = Math.min(scrollTop / docHeight, 1);
+
+    // Scale grows from 1 to 9x as you reach bottom
+    const scale = 1 + (progress * 8);
+    const opacity = 0.38 + (progress * 0.28);
+
+    // Horizontal: always centred
+    const x = window.innerWidth / 2;
+    // Vertical: starts at hero logo position, follows scroll down viewport
+    // As progress goes 0->1, Y moves from hero centre toward bottom of viewport
+    const startY = heroCY;
+    const endY = window.innerHeight * 0.65;
+    const y = startY + (endY - startY) * progress;
+
+    bgLogo.style.left = x + 'px';
+    bgLogo.style.top = y + 'px';
+    bgLogo.style.transform = 'translate(-50%,-50%) scale(' + scale + ')';
+    bgLogo.style.opacity = opacity;
+  }
+
+  window.addEventListener('scroll', updateLogo, {passive:true});
+  window.addEventListener('resize', function(){ cacheHero(); updateLogo(); });
+  window.addEventListener('load', function(){ cacheHero(); updateLogo(); });
+  cacheHero();
+  updateLogo();
+</script>
+</body>
+</html>
